@@ -8,13 +8,22 @@ const cors = require('cors')
 
 const app = express();
 app.use(cors())
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001; //3001
 
 // Connect to MongoDB (make sure MongoDB is running)
-mongoose.connect('mongodb://localhost:27017/vehicle-tracking', {
+// mongoose.connect('mongodb://localhost:27017/vehicle-tracking', {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+// });
+
+// Connect to MongoDB Cloud
+mongoose.connect('mongodb+srv://neshadihirunika:EofzAZ9TOCHsIGQO@cluster0.b9o1e.mongodb.net/vehicle-tracking?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-});
+})
+    .then(() => console.log('Connected to MongoDB Cloud successfully.'))
+    .catch((error) => console.error('Error connecting to MongoDB Cloud:', error));
+
 
 // Middleware
 app.use(bodyParser.json());
