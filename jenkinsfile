@@ -1,37 +1,23 @@
 pipeline {
-    agent any 
-    
-    stages { 
-        stage('SCM Checkout') {
+    agent any
+    stages {
+        stage('Build') {
             steps {
-                retry(3) {
-                    git branch: 'main', url: 'https://github.com/HGSChandeepa/test-node'
+                bat 'docker build -t Neshadi/server-image:latest .'
+            }
+        }
+        stage('Push to Docker Hub') {
+            steps {
+                withDockerRegistry([credentialsId: 'docker-hub-credentials']) {
+                    bat 'docker push Neshadi/server-image:latest'
                 }
             }
         }
-        stage('Build Docker Image') {
-            steps {  
-                bat 'docker build -t adomicarts/nodeapp-cuban:%BUILD_NUMBER% .'
-            }
-        }
-        stage('Login to Docker Hub') {
+        stage('Deploy') {
             steps {
-                withCredentials([string(credentialsId: 'samin-docker', variable: 'samindocker')]) {
-                    script {
-                        bat "docker login -u adomicarts -p %samindocker%"
-                    }
-                }
+                bat 'docker pull Neshadi/server-image:latest'
+                bat 'docker run -d -p 8080:8080 Neshadi/server-image'
             }
-        }
-        stage('Push Image') {
-            steps {
-                bat 'docker push neshadi/nodeapp-cuban:%BUILD_NUMBER%'
-            }
-        }
-    }
-    post {
-        always {
-            bat 'docker logout'
         }
     }
 }
