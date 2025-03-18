@@ -19,17 +19,17 @@ pipeline {
                     def imageVersion = "${env.BUILD_NUMBER}"
 
                     // Build first image (server)
-                    bat "docker build -t hirunika/server-image:${imageVersion} -f Dockerfileserver ."
+                    bat "docker build -t hirunika/server-image:${imageVersion} -f Dockerfile.server ."
 
                     // Build second image (client)
-                    bat "docker build -t hirunika/client-image:${imageVersion} -f Dockerfileclient ."
+                    bat "docker build -t hirunika/client-image:${imageVersion} -f Dockerfile.client ."
                 }
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: '', variable: 'test-dockerpass')]) {
+                withCredentials([string(credentialsId: 'test-dockerpass', variable: 'test-dockerpass')]) {
                     script {
                         bat "docker login -u hirunika -p %test-dockerpass%"
                     }
