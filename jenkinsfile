@@ -2,7 +2,7 @@ pipeline {
     agent any 
     
     stages { 
-            stages { 
+             
         stage('SCM Checkout') {
             steps {
                 // Corrected the SCM checkout syntax
