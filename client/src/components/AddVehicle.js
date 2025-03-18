@@ -207,7 +207,7 @@ const AddVehicle = ({ onAddVehicle }) => {
 					</label>
 				</div>
 				<button type="submit" className="form-button">
-					Add Vehicle
+					Add New Vehicle
 				</button>
 			</form>
 		</div>
