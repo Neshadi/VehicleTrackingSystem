@@ -1,13 +1,7 @@
 pipeline {
     agent any 
      
-    environment {
-        imageVersion = '1.0'
-    }
-    
     stages { 
-             
-       
         stage('SCM Checkout') {
             steps {
                 retry(3) {
@@ -19,13 +13,11 @@ pipeline {
         stage('Build and Push Docker Images') {
             steps {  
                 script {
-                    
+                    // Build first image (server) without version tag
+                    bat "docker build -t hirunika/server-image -f Dockerfileserver ."
 
-                    // Build first image (server)
-                    bat "docker build -t hirunika/server-image:${imageVersion} -f Dockerfileserver ."
-
-                    // Build second image (client)
-                    bat "docker build -t hirunika/client-image:${imageVersion} -f Dockerfileclient ."
+                    // Build second image (client) without version tag
+                    bat "docker build -t hirunika/client-image -f Dockerfileclient ."
                 }
             }
         }
@@ -39,16 +31,18 @@ pipeline {
                 }
             }
         }
-        stage('Push Image') {
-        steps {
-        script {
-           bat "docker push hirunika/server-image:${IMAGE_VERSION}"
-           bat "docker push hirunika/client-image:${IMAGE_VERSION}"
-    }
-}
-}
 
+        stage('Push Image') {
+            steps {
+                script {
+                    // Push images without version tag
+                    bat "docker push hirunika/server-image"
+                    bat "docker push hirunika/client-image"
+                }
+            }
+        }
     }
+
     post {
         always {
             bat 'docker logout'
