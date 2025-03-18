@@ -1,23 +1,46 @@
 pipeline {
-    agent any
-    stages {
-        stage('Build') {
+    agent any 
+    
+    stages { 
+        stage('SCM Checkout') {
             steps {
-                bat 'docker build -t Neshadi/server-image:latest .'
+                
+                    url: 'https://github.com/Neshadi/VehicleTrackingSystem'
+                
             }
         }
-        stage('Push to Docker Hub') {
-            steps {
-                withDockerRegistry([credentialsId: 'docker-hub-credentials']) {
-                    bat 'docker push Neshadi/server-image:latest'
+                stage('Build and Push Docker Images') {
+            steps {  
+                script {
+                    def imageVersion = "${env.BUILD_NUMBER}"
+
+                    // Build first image (server)
+                    bat "docker build -t hirunika/server-image:${imageVersion} -f Dockerfile.server ."
+
+                    // Build second image (client)
+                    bat "docker build -t hirunika/client-image:${imageVersion} -f Dockerfile.client ."
                 }
             }
         }
-        stage('Deploy') {
+
+        stage('Login to Docker Hub') {
             steps {
-                bat 'docker pull Neshadi/server-image:latest'
-                bat 'docker run -d -p 8080:8080 Neshadi/server-image'
+                withCredentials([string(credentialsId: 'samin-docker', variable: 'samindocker')]) {
+                    script {
+                        bat "docker login -u adomicarts -p %samindocker%"
+                    }
+                }
             }
+        }
+        stage('Push Image') {
+            steps {
+                bat 'docker push adomicarts/nodeapp-cuban:%BUILD_NUMBER%'
+            }
+        }
+    }
+    post {
+        always {
+            bat 'docker logout'
         }
     }
 }
