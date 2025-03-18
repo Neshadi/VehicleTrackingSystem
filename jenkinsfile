@@ -19,8 +19,11 @@ pipeline {
                 script {
                     
 
-                    bat "docker push hirunika/server-image:${IMAGE_VERSION}"
-                    bat "docker push hirunika/client-image:${IMAGE_VERSION}"
+                    // Build first image (server)
+                    bat "docker build -t hirunika/server-image:${imageVersion} -f Dockerfileserver ."
+
+                    // Build second image (client)
+                    bat "docker build -t hirunika/client-image:${imageVersion} -f Dockerfileclient ."
                 }
             }
         }
@@ -37,8 +40,8 @@ pipeline {
         stage('Push Image') {
         steps {
         script {
-            bat "docker push hirunika/server-image:${imageVersion} && docker push hirunika/client-image:${imageVersion}"
-        }
+           bat "docker push hirunika/server-image:${IMAGE_VERSION}"
+           bat "docker push hirunika/client-image:${IMAGE_VERSION}"
     }
 }
 
