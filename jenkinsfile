@@ -1,7 +1,8 @@
 pipeline {
     agent any 
-     environment {
-        IMAGE_VERSION = "${env.BUILD_NUMBER}"
+     
+    environment {
+        imageVersion = '1.0'
     }
     
     stages { 
