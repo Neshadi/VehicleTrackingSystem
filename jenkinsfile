@@ -19,10 +19,10 @@ pipeline {
                     def imageVersion = "${env.BUILD_NUMBER}"
 
                     // Build first image (server)
-                    bat "docker build -t hirunika/server-image:${imageVersion} -f Dockerfile.server ."
+                    bat "docker build -t hirunika/server-image:${imageVersion} -f Dockerfileserver ."
 
                     // Build second image (client)
-                    bat "docker build -t hirunika/client-image:${imageVersion} -f Dockerfile.client ."
+                    bat "docker build -t hirunika/client-image:${imageVersion} -f Dockerfileclient ."
                 }
             }
         }
