@@ -3,14 +3,12 @@ pipeline {
     
     stages { 
              
+       
         stage('SCM Checkout') {
             steps {
-                // Corrected the SCM checkout syntax
-                checkout scm: [
-                    $class: 'GitSCM', 
-                    branches: [[name: '*/master']], // Replace with your branch name if different
-                    userRemoteConfigs: [[url: 'https://github.com/Neshadi/VehicleTrackingSystem.git']]
-                ]
+                retry(3) {
+                    git branch: 'master', url: 'https://github.com/Neshadi/VehicleTrackingSystem.git'
+                }
             }
         }
                 stage('Build and Push Docker Images') {
