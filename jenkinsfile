@@ -5,7 +5,7 @@ pipeline {
         stage('SCM Checkout') {
             steps {
                 
-                    url: 'https://github.com/Neshadi/VehicleTrackingSystem'
+                    url: 'https://github.com/Neshadi/VehicleTrackingSystem.git'
                 
             }
         }
@@ -25,16 +25,16 @@ pipeline {
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'samin-docker', variable: 'samindocker')]) {
+                withCredentials([string(credentialsId: '', variable: 'test-dockerpass')]) {
                     script {
-                        bat "docker login -u adomicarts -p %samindocker%"
+                        bat "docker login -u hirunika -p %test-dockerpass%"
                     }
                 }
             }
         }
         stage('Push Image') {
             steps {
-                bat 'docker push adomicarts/nodeapp-cuban:%BUILD_NUMBER%'
+                bat 'docker push hirunika/server-image:${imageVersion} && docker push hirunika/client-image:${imageVersion}'
             }
         }
     }
