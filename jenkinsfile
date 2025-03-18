@@ -1,5 +1,8 @@
 pipeline {
     agent any 
+     environment {
+        IMAGE_VERSION = "${env.BUILD_NUMBER}"
+    }
     
     stages { 
              
@@ -14,13 +17,10 @@ pipeline {
                 stage('Build and Push Docker Images') {
             steps {  
                 script {
-                    def imageVersion = "${env.BUILD_NUMBER}"
+                    
 
-                    // Build first image (server)
-                    bat "docker build -t hirunika/server-image:${imageVersion} -f Dockerfileserver ."
-
-                    // Build second image (client)
-                    bat "docker build -t hirunika/client-image:${imageVersion} -f Dockerfileclient ."
+                    bat "docker push hirunika/server-image:${IMAGE_VERSION}"
+                    bat "docker push hirunika/client-image:${IMAGE_VERSION}"
                 }
             }
         }
