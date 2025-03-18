@@ -14,7 +14,8 @@ pipeline {
                 }
             }
         }
-                stage('Build and Push Docker Images') {
+
+        stage('Build and Push Docker Images') {
             steps {  
                 script {
                     
@@ -44,6 +45,7 @@ pipeline {
            bat "docker push hirunika/client-image:${IMAGE_VERSION}"
     }
 }
+}
 
     }
     post {
@@ -51,5 +53,4 @@ pipeline {
             bat 'docker logout'
         }
     }
-}
 }
