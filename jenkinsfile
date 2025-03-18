@@ -35,10 +35,13 @@ pipeline {
             }
         }
         stage('Push Image') {
-            steps {
-                bat 'docker push hirunika/server-image:${imageVersion} && docker push hirunika/client-image:${imageVersion}'
-            }
+        steps {
+        script {
+            bat "docker push hirunika/server-image:${imageVersion} && docker push hirunika/client-image:${imageVersion}"
         }
+    }
+}
+
     }
     post {
         always {
