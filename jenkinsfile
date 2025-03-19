@@ -5,7 +5,7 @@ pipeline {
         stage('Check Git Version') {
             steps {
                 script {
-                    bat 'git --version' // Check if Git is installed
+                    sh 'git --version' // Check if Git is installed
                 }
             }
         }
