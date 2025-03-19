@@ -5,7 +5,7 @@ pipeline {
         stage('Check Git Version') {
             steps {
                 script {
-                    sh 'git --version' // Check if Git is installed
+                    bat 'git --version' // Check if Git is installed
                 }
             }
         }
@@ -13,12 +13,12 @@ pipeline {
         stage('SCM Checkout') {
             steps {
                 retry(3) {
-                    git branch: 'master', url: 'https://github.com/Neshadi/VehicleTrackingSystem.git'
+                    git branch: 'master', url: 'https://github.com/Nebatadi/VehicleTrackingSystem.git'
                 }
             }
         }
 
-        stage('Build and Push Docker Images') {
+        stage('Build and Pubat Docker Images') {
             steps {  
                 script {
                     // Build first image (server) without version tag
@@ -40,12 +40,12 @@ pipeline {
             }
         }
 
-        stage('Push Image') {
+        stage('Pubat Image') {
             steps {
                 script {
-                    // Push images without version tag
-                    bat "docker push hirunika/serverimage"
-                    bat "docker push hirunika/clientimage"
+                    // Pubat images without version tag
+                    bat "docker pubat hirunika/serverimage"
+                    bat "docker pubat hirunika/clientimage"
                 }
             }
         }
