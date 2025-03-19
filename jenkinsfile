@@ -1,7 +1,59 @@
-pipeline {
-    agent any 
+// pipeline {
+//     agent any 
      
-    stages { 
+//     stages { 
+//         stage('SCM Checkout') {
+//             steps {
+//                 retry(3) {
+//                     git branch: 'master', url: 'https://github.com/Neshadi/VehicleTrackingSystem.git'
+//                 }
+//             }
+//         }
+
+//         stage('Build and Push Docker Images') {
+//             steps {  
+//                 script {
+//                     // Build first image (server) without version tag
+//                     bat "docker build -t hirunika/server-image -f Dockerfileserver ."
+
+//                     // Build second image (client) without version tag
+//                     bat "docker build -t hirunika/client-image -f Dockerfileclient ."
+//                 }
+//             }
+//         }
+
+//         stage('Login to Docker Hub') {
+//             steps {
+//                 withCredentials([string(credentialsId: 'test-dockerpass', variable: 'test-dockerpass')]) {
+//                     script {
+//                         bat "docker login -u hirunika -p %test-dockerpass%"
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Push Image') {
+//             steps {
+//                 script {
+//                     // Push images without version tag
+//                     bat "docker push hirunika/server-image"
+//                     bat "docker push hirunika/client-image"
+//                 }
+//             }
+//         }
+//     }
+
+//     post {
+//         always {
+//             bat 'docker logout'
+//         }
+//     }
+// }
+
+pipeline {
+    agent any
+
+    stages {
         stage('SCM Checkout') {
             steps {
                 retry(3) {
@@ -11,13 +63,17 @@ pipeline {
         }
 
         stage('Build and Push Docker Images') {
-            steps {  
+            steps {
                 script {
-                    // Build first image (server) without version tag
-                    bat "docker build -t hirunika/server-image -f Dockerfileserver ."
-
-                    // Build second image (client) without version tag
-                    bat "docker build -t hirunika/client-image -f Dockerfileclient ."
+                    if (isUnix()) {
+                        // For Linux/Unix environment
+                        sh "docker build -t hirunika/server-image -f Dockerfileserver ."
+                        sh "docker build -t hirunika/client-image -f Dockerfileclient ."
+                    } else {
+                        // For Windows environment
+                        bat "docker build -t hirunika/server-image -f Dockerfileserver ."
+                        bat "docker build -t hirunika/client-image -f Dockerfileclient ."
+                    }
                 }
             }
         }
@@ -26,7 +82,13 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'test-dockerpass', variable: 'test-dockerpass')]) {
                     script {
-                        bat "docker login -u hirunika -p %test-dockerpass%"
+                        if (isUnix()) {
+                            // For Linux/Unix environment
+                            sh "docker login -u hirunika -p ${test-dockerpass}"
+                        } else {
+                            // For Windows environment
+                            bat "docker login -u hirunika -p %test-dockerpass%"
+                        }
                     }
                 }
             }
@@ -35,9 +97,15 @@ pipeline {
         stage('Push Image') {
             steps {
                 script {
-                    // Push images without version tag
-                    bat "docker push hirunika/server-image"
-                    bat "docker push hirunika/client-image"
+                    if (isUnix()) {
+                        // For Linux/Unix environment
+                        sh "docker push hirunika/server-image"
+                        sh "docker push hirunika/client-image"
+                    } else {
+                        // For Windows environment
+                        bat "docker push hirunika/server-image"
+                        bat "docker push hirunika/client-image"
+                    }
                 }
             }
         }
@@ -45,7 +113,13 @@ pipeline {
 
     post {
         always {
-            bat 'docker logout'
+            if (isUnix()) {
+                // For Linux/Unix environment
+                sh 'docker logout'
+            } else {
+                // For Windows environment
+                bat 'docker logout'
+            }
         }
     }
 }
