@@ -113,12 +113,14 @@ pipeline {
 
     post {
         always {
-            if (isUnix()) {
-                // For Linux/Unix environment
-                sh 'docker logout'
-            } else {
-                // For Windows environment
-                bat 'docker logout'
+            script {
+                if (isUnix()) {
+                    // For Linux/Unix environment
+                    sh 'docker logout'
+                } else {
+                    // For Windows environment
+                    bat 'docker logout'
+                }
             }
         }
     }
