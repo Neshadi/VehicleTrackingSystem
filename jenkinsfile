@@ -128,38 +128,45 @@
 
 
 pipeline {
-    agent any  // This will run the job on any available agent (master or EC2 node)
-    
+    agent any
+
     stages {
         stage('Checkout') {
             steps {
                 // Checkout the code from your GitHub repository
-                git url: 'https://github.com/Neshadi/VehicleTrackingSystem.git', branch: 'master'
+                git url: 'https://github.com/youruser/yourrepo.git', branch: 'main'
             }
         }
-        
+
+        stage('Install Dependencies') {
+            steps {
+                // Install the project dependencies using npm
+                sh 'npm install'  // Or use 'yarn install' if you're using yarn
+            }
+        }
+
         stage('Build') {
             steps {
-                // Example: Run build commands (like Maven or Gradle)
-                sh 'mvn clean install' // Adjust for your project
+                // Build the React app
+                sh 'npm run build'  // This will create the production build
             }
         }
-        
+
         stage('Test') {
             steps {
-                // Run tests (adjust for your testing framework)
-                sh 'mvn test'  // Adjust for your testing framework
+                // Run tests (you can adjust for your testing framework)
+                sh 'npm test'  // Or use 'yarn test' if you're using yarn
             }
         }
-        
+
         stage('Deploy') {
             steps {
-                // Example: Deployment step (adjust for your project)
+                // Add deployment logic here if needed
                 echo 'Deploying application...'
             }
         }
     }
-    
+
     post {
         success {
             echo 'Build and deployment successful!'
@@ -169,4 +176,3 @@ pipeline {
         }
     }
 }
-
