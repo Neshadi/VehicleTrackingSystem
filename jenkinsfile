@@ -130,6 +130,20 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'nodejs'  // This name should match the name you gave it in the Global Tool Configuration
+    }
+
+    stages {
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Make sure to use npm install here
+                    sh 'npm install'
+                }
+            }
+        }
+    }
     stages {
         stage('Checkout') {
             steps {
