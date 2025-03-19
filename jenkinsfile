@@ -1,64 +1,12 @@
-pipeline {
-    agent any 
-    
-    environment {
-        
-        DOCKER_USER = 'hirunika'
-        DOCKER_PASS = credentials('test-dockerpass')  
-    }
-    
-    stages { 
-        stage('SCM Checkout') {
-            steps {
-                retry(3) {
-                    git branch: 'master', url: 'https://github.com/Neshadi/VehicleTrackingSystem.git'
-                }
-            }
-        }
-
-        stage('Build and Push Docker Images') {
-            steps {
-                script {
-                    // Build first image (server) without version tag
-                    sh "docker build -t ${DOCKER_USER}/server-image -f Dockerfileserver ."
-
-                    // Build second image (client) without version tag
-                    sh "docker build -t ${DOCKER_USER}/client-image -f Dockerfileclient ."
-                }
-            }
-        }
-
-        stage('Login to Docker Hub') {
-            steps {
-                script {
-                    // Login to Docker Hub using credentials stored in Jenkins
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                }
-            }
-        }
-
-        stage('Push Image') {
-            steps {
-                script {
-                    // Push images without version tag
-                    sh "docker push ${DOCKER_USER}/server-image"
-                    sh "docker push ${DOCKER_USER}/client-image"
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            // Logout of Docker after the build is complete
-            sh 'docker logout'
-        }
-    }
-}
-
 // pipeline {
 //     agent any 
-     
+    
+//     environment {
+        
+//         DOCKER_USER = 'hirunika'
+//         DOCKER_PASS = credentials('test-dockerpass')  
+//     }
+    
 //     stages { 
 //         stage('SCM Checkout') {
 //             steps {
@@ -69,23 +17,22 @@ pipeline {
 //         }
 
 //         stage('Build and Push Docker Images') {
-//             steps {  
+//             steps {
 //                 script {
 //                     // Build first image (server) without version tag
-//                     bat "docker build -t hirunika/server-image -f Dockerfileserver ."
+//                     sh "docker build -t ${DOCKER_USER}/server-image -f Dockerfileserver ."
 
 //                     // Build second image (client) without version tag
-//                     bat "docker build -t hirunika/client-image -f Dockerfileclient ."
+//                     sh "docker build -t ${DOCKER_USER}/client-image -f Dockerfileclient ."
 //                 }
 //             }
 //         }
 
 //         stage('Login to Docker Hub') {
 //             steps {
-//                 withCredentials([string(credentialsId: 'test-dockerpass', variable: 'test-dockerpass')]) {
-//                     script {
-//                         bat "docker login -u hirunika -p %test-dockerpass%"
-//                     }
+//                 script {
+//                     // Login to Docker Hub using credentials stored in Jenkins
+//                     sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
 //                 }
 //             }
 //         }
@@ -94,8 +41,8 @@ pipeline {
 //             steps {
 //                 script {
 //                     // Push images without version tag
-//                     bat "docker push hirunika/server-image"
-//                     bat "docker push hirunika/client-image"
+//                     sh "docker push ${DOCKER_USER}/server-image"
+//                     sh "docker push ${DOCKER_USER}/client-image"
 //                 }
 //             }
 //         }
@@ -103,7 +50,60 @@ pipeline {
 
 //     post {
 //         always {
-//             bat 'docker logout'
+//             // Logout of Docker after the build is complete
+//             sh 'docker logout'
 //         }
 //     }
 // }
+
+pipeline {
+    agent any 
+     
+    stages { 
+        stage('SCM Checkout') {
+            steps {
+                retry(3) {
+                    git branch: 'master', url: 'https://github.com/Neshadi/VehicleTrackingSystem.git'
+                }
+            }
+        }
+
+        stage('Build and Push Docker Images') {
+            steps {  
+                script {
+                    // Build first image (server) without version tag
+                    bat "docker build -t hirunika/server-image -f Dockerfileserver ."
+
+                    // Build second image (client) without version tag
+                    bat "docker build -t hirunika/client-image -f Dockerfileclient ."
+                }
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([string(credentialsId: 'test-dockerpass', variable: 'test-dockerpass')]) {
+                    script {
+                        bat "docker login -u hirunika -p %test-dockerpass%"
+                    }
+                }
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                script {
+                    // Push images without version tag
+                    bat "docker push hirunika/server-image"
+                    bat "docker push hirunika/client-image"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            bat 'docker logout'
+        }
+    }
+}
