@@ -134,7 +134,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the code from your GitHub repository
-                git url: 'https://github.com/Neshadi/VehicleTrackingSystem.git', branch: 'main'
+                git url: 'https://github.com/Neshadi/VehicleTrackingSystem.git', branch: 'master'
             }
         }
 
