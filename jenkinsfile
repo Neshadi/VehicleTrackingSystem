@@ -50,78 +50,123 @@
 //     }
 // }
 
+// pipeline {
+//     agent any
+
+//     stages {
+//         stage('SCM Checkout') {
+//             steps {
+//                 retry(3) {
+//                     git branch: 'master', url: 'https://github.com/Neshadi/VehicleTrackingSystem.git'
+//                 }
+//             }
+//         }
+
+//         stage('Build and Push Docker Images') {
+//             steps {
+//                 script {
+//                     if (isUnix()) {
+//                         // For Linux/Unix environment
+//                         sh "docker build -t hirunika/server-image -f Dockerfileserver ."
+//                         sh "docker build -t hirunika/client-image -f Dockerfileclient ."
+//                     } else {
+//                         // For Windows environment
+//                         bat "docker build -t hirunika/server-image -f Dockerfileserver ."
+//                         bat "docker build -t hirunika/client-image -f Dockerfileclient ."
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Login to Docker Hub') {
+//             steps {
+//                 withCredentials([string(credentialsId: 'test-dockerpass', variable: 'test-dockerpass')]) {
+//                     script {
+//                         if (isUnix()) {
+//                             // For Linux/Unix environment
+//                             sh "docker login -u hirunika -p ${test-dockerpass}"
+//                         } else {
+//                             // For Windows environment
+//                             bat "docker login -u hirunika -p %test-dockerpass%"
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Push Image') {
+//             steps {
+//                 script {
+//                     if (isUnix()) {
+//                         // For Linux/Unix environment
+//                         sh "docker push hirunika/server-image"
+//                         sh "docker push hirunika/client-image"
+//                     } else {
+//                         // For Windows environment
+//                         bat "docker push hirunika/server-image"
+//                         bat "docker push hirunika/client-image"
+//                     }
+//                 }
+//             }
+//         }
+//     }
+
+//     post {
+//         always {
+//             script {
+//                 if (isUnix()) {
+//                     // For Linux/Unix environment
+//                     sh 'docker logout'
+//                 } else {
+//                     // For Windows environment
+//                     bat 'docker logout'
+//                 }
+//             }
+//         }
+//     }
+// }
+
+
 pipeline {
-    agent any
-
+    agent any  // This will run the job on any available agent (master or EC2 node)
+    
     stages {
-        stage('SCM Checkout') {
+        stage('Checkout') {
             steps {
-                retry(3) {
-                    git branch: 'master', url: 'https://github.com/Neshadi/VehicleTrackingSystem.git'
-                }
+                // Checkout the code from your GitHub repository
+                git url: 'https://github.com/Neshadi/VehicleTrackingSystem.git', branch: 'master'
             }
         }
-
-        stage('Build and Push Docker Images') {
+        
+        stage('Build') {
             steps {
-                script {
-                    if (isUnix()) {
-                        // For Linux/Unix environment
-                        sh "docker build -t hirunika/server-image -f Dockerfileserver ."
-                        sh "docker build -t hirunika/client-image -f Dockerfileclient ."
-                    } else {
-                        // For Windows environment
-                        bat "docker build -t hirunika/server-image -f Dockerfileserver ."
-                        bat "docker build -t hirunika/client-image -f Dockerfileclient ."
-                    }
-                }
+                // Example: Run build commands (like Maven or Gradle)
+                sh 'mvn clean install' // Adjust for your project
             }
         }
-
-        stage('Login to Docker Hub') {
+        
+        stage('Test') {
             steps {
-                withCredentials([string(credentialsId: 'test-dockerpass', variable: 'test-dockerpass')]) {
-                    script {
-                        if (isUnix()) {
-                            // For Linux/Unix environment
-                            sh "docker login -u hirunika -p ${test-dockerpass}"
-                        } else {
-                            // For Windows environment
-                            bat "docker login -u hirunika -p %test-dockerpass%"
-                        }
-                    }
-                }
+                // Run tests (adjust for your testing framework)
+                sh 'mvn test'  // Adjust for your testing framework
             }
         }
-
-        stage('Push Image') {
+        
+        stage('Deploy') {
             steps {
-                script {
-                    if (isUnix()) {
-                        // For Linux/Unix environment
-                        sh "docker push hirunika/server-image"
-                        sh "docker push hirunika/client-image"
-                    } else {
-                        // For Windows environment
-                        bat "docker push hirunika/server-image"
-                        bat "docker push hirunika/client-image"
-                    }
-                }
+                // Example: Deployment step (adjust for your project)
+                echo 'Deploying application...'
             }
         }
     }
-
+    
     post {
-        always {
-            script {
-                if (isUnix()) {
-                    // For Linux/Unix environment
-                    sh 'docker logout'
-                } else {
-                    // For Windows environment
-                    bat 'docker logout'
-                }
-            }
+        success {
+            echo 'Build and deployment successful!'
+        }
+        failure {
+            echo 'Build or deployment failed!'
         }
     }
 }
+

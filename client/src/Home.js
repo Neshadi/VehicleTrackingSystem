@@ -8,7 +8,7 @@ import VehicleList from "./components/VehicleList";
 
 const Home = () => {
 	const [vehicles, setVehicles] = useState([]);
-	const [showForm, setshowForm] = useState(false);
+	const [showForm, setShowForm] = useState(false);
 
 	useEffect(() => {
 		axios
@@ -67,7 +67,7 @@ http://localhost:3001/api/cars/${updatedVehicle._id}`,
 		<div className="main-container">
 			<h1 className="gfg">Fonto Car Sale</h1>
 			<h1>Car Tracking System</h1>
-			<button onClick={() => setshowForm(!showForm)}>
+			<button onClick={() => setShowForm(!showForm)}>
 				{showForm ? "Close" : "Add New Vehicle"}
 			</button>
 			<div className="">
