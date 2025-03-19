@@ -1,12 +1,64 @@
+// pipeline {
+//     agent any 
+    
+//     environment {
+        
+//         DOCKER_USER = 'hirunika'
+//         DOCKER_PASS = credentials('test-dockerpass')  
+//     }
+    
+//     stages { 
+//         stage('SCM Checkout') {
+//             steps {
+//                 retry(3) {
+//                     git branch: 'master', url: 'https://github.com/Neshadi/VehicleTrackingSystem.git'
+//                 }
+//             }
+//         }
+
+//         stage('Build and Push Docker Images') {
+//             steps {
+//                 script {
+//                     // Build first image (server) without version tag
+//                     sh "docker build -t ${DOCKER_USER}/server-image -f Dockerfileserver ."
+
+//                     // Build second image (client) without version tag
+//                     sh "docker build -t ${DOCKER_USER}/client-image -f Dockerfileclient ."
+//                 }
+//             }
+//         }
+
+//         stage('Login to Docker Hub') {
+//             steps {
+//                 script {
+//                     // Login to Docker Hub using credentials stored in Jenkins
+//                     sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+//                 }
+//             }
+//         }
+
+//         stage('Push Image') {
+//             steps {
+//                 script {
+//                     // Push images without version tag
+//                     sh "docker push ${DOCKER_USER}/server-image"
+//                     sh "docker push ${DOCKER_USER}/client-image"
+//                 }
+//             }
+//         }
+//     }
+
+//     post {
+//         always {
+//             // Logout of Docker after the build is complete
+//             sh 'docker logout'
+//         }
+//     }
+// }
+
 pipeline {
-    agent any // Replace with the label of your agent
-    
-    environment {
-        // Define any global environment variables here, such as Docker Hub credentials
-        DOCKER_USER = 'hirunika'
-        DOCKER_PASS = credentials('test-dockerpass')  // Using Jenkins credentials for Docker login
-    }
-    
+    agent any 
+     
     stages { 
         stage('SCM Checkout') {
             steps {
@@ -17,22 +69,23 @@ pipeline {
         }
 
         stage('Build and Push Docker Images') {
-            steps {
+            steps {  
                 script {
                     // Build first image (server) without version tag
-                    sh "docker build -t ${DOCKER_USER}/server-image -f Dockerfileserver ."
+                    bat "docker build -t hirunika/server-image -f Dockerfileserver ."
 
                     // Build second image (client) without version tag
-                    sh "docker build -t ${DOCKER_USER}/client-image -f Dockerfileclient ."
+                    bat "docker build -t hirunika/client-image -f Dockerfileclient ."
                 }
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                script {
-                    // Login to Docker Hub using credentials stored in Jenkins
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                withCredentials([string(credentialsId: 'test-dockerpass', variable: 'test-dockerpass')]) {
+                    script {
+                        bat "docker login -u hirunika -p %test-dockerpass%"
+                    }
                 }
             }
         }
@@ -41,8 +94,8 @@ pipeline {
             steps {
                 script {
                     // Push images without version tag
-                    sh "docker push ${DOCKER_USER}/server-image"
-                    sh "docker push ${DOCKER_USER}/client-image"
+                    bat "docker push hirunika/server-image"
+                    bat "docker push hirunika/client-image"
                 }
             }
         }
@@ -50,8 +103,7 @@ pipeline {
 
     post {
         always {
-            // Logout of Docker after the build is complete
-            sh 'docker logout'
+            bat 'docker logout'
         }
     }
 }
