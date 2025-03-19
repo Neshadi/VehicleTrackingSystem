@@ -2,50 +2,42 @@ pipeline {
     agent any 
      
     stages { 
-        stage('Check Git Version') {
-            steps {
-                script {
-                    sh 'git --version' // Check if Git is installed
-                }
-            }
-        }
-
         stage('SCM Checkout') {
             steps {
                 retry(3) {
-                    git branch: 'master', url: 'https://github.com/Nebatadi/VehicleTrackingSystem.git'
+                    git branch: 'master', url: 'https://github.com/Neshadi/VehicleTrackingSystem.git'
                 }
             }
         }
 
-        stage('Build and Pubat Docker Images') {
+        stage('Build and Push Docker Images') {
             steps {  
                 script {
                     // Build first image (server) without version tag
-                    bat "docker build -t hirunika/serverimage -f Dockerfileserver ."
+                    bat "docker build -t hirunika/server-image -f Dockerfileserver ."
 
                     // Build second image (client) without version tag
-                    bat "docker build -t hirunika/clientimage -f Dockerfileclient ."
+                    bat "docker build -t hirunika/client-image -f Dockerfileclient ."
                 }
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'test-dockerpass', variable: 'DOCKER_PASS')]) {
+                withCredentials([string(credentialsId: 'test-dockerpass', variable: 'test-dockerpass')]) {
                     script {
-                        bat "docker login -u hirunika -p %DOCKER_PASS%"
+                        bat "docker login -u hirunika -p %test-dockerpass%"
                     }
                 }
             }
         }
 
-        stage('Pubat Image') {
+        stage('Push Image') {
             steps {
                 script {
-                    // Pubat images without version tag
-                    bat "docker pubat hirunika/serverimage"
-                    bat "docker pubat hirunika/clientimage"
+                    // Push images without version tag
+                    bat "docker push hirunika/server-image"
+                    bat "docker push hirunika/client-image"
                 }
             }
         }
