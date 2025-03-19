@@ -24,7 +24,7 @@ const VehicleList = ({
 
 	return (
 		<div className="list" style={{ marginTop: "20px" }}>
-			<h2 style={{ color: "#007BFF" }}>Vehicle List</h2>
+			<h2 style={{ color: "#007BFF" }}>Vehicles List</h2>
 
 			{/* Filter and Sort Controls */}
 			<div style={{ marginBottom: "10px" }}>
