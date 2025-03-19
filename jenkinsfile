@@ -14,10 +14,10 @@ pipeline {
             steps {  
                 script {
                     // Build first image (server) without version tag
-                    bat "docker build -t hirunika/server-image -f Dockerfileserver ."
+                    bat "docker build -t hirunika/serverimage -f Dockerfileserver ."
 
                     // Build second image (client) without version tag
-                    bat "docker build -t hirunika/client-image -f Dockerfileclient ."
+                    bat "docker build -t hirunika/clientimage -f Dockerfileclient ."
                 }
             }
         }
