@@ -2,6 +2,14 @@ pipeline {
     agent any 
      
     stages { 
+        stage('Check Git Version') {
+            steps {
+                script {
+                    sh 'git --version' // Check if Git is installed
+                }
+            }
+        }
+
         stage('SCM Checkout') {
             steps {
                 retry(3) {
@@ -24,9 +32,9 @@ pipeline {
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'test-dockerpass', variable: 'test-dockerpass')]) {
+                withCredentials([string(credentialsId: 'test-dockerpass', variable: 'DOCKER_PASS')]) {
                     script {
-                        bat "docker login -u hirunika -p %test-dockerpass%"
+                        bat "docker login -u hirunika -p %DOCKER_PASS%"
                     }
                 }
             }
@@ -36,8 +44,8 @@ pipeline {
             steps {
                 script {
                     // Push images without version tag
-                    bat "docker push hirunika/server-image"
-                    bat "docker push hirunika/client-image"
+                    bat "docker push hirunika/serverimage"
+                    bat "docker push hirunika/clientimage"
                 }
             }
         }
