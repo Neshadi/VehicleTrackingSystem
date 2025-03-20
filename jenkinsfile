@@ -13,10 +13,7 @@ pipeline {
         stage('Build and Push Docker Images') {
             steps {
                 script {
-                    // Build first image (server) without version tag
                     sh "docker build -t hirunika/server-image -f Dockerfileserver ."
-
-                    // Build second image (client) without version tag
                     sh "docker build -t hirunika/client-image -f Dockerfileclient ."
                 }
             }
@@ -26,7 +23,9 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
-                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                        sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        '''
                     }
                 }
             }
@@ -35,7 +34,6 @@ pipeline {
         stage('Push Image') {
             steps {
                 script {
-                    // Push images without version tag
                     sh "docker push hirunika/server-image"
                     sh "docker push hirunika/client-image"
                 }
