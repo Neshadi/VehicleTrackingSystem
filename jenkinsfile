@@ -30,17 +30,20 @@ pipeline {
 //         }
 //     }
 // }
-
-stage('Debug Credentials') {
+stage('Login to Docker Hub') {
     steps {
-        script {
-            sh '''
-                echo "Username: $DOCKER_USER"
-                echo "Password Length: $(echo -n "$DOCKER_PASS" | wc -c)"
-            '''
+        withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+            script {
+                sh '''
+                    export DOCKER_USER=${DOCKER_USER}
+                    export DOCKER_PASS=${DOCKER_PASS}
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                '''
+            }
         }
     }
 }
+
 
 
 
