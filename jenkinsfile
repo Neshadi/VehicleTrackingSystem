@@ -19,17 +19,29 @@ pipeline {
             }
         }
 
-    stage('Login to Docker Hub') {
+//     stage('Login to Docker Hub') {
+//     steps {
+//         withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+//             script {
+//                 sh '''
+//                     echo "$DOCKER_PASS" | docker login -u $DOCKER_USER --password-stdin
+//                 '''
+//             }
+//         }
+//     }
+// }
+
+stage('Debug Credentials') {
     steps {
-        withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-            script {
-                sh '''
-                    echo "$DOCKER_PASS" | docker login -u $DOCKER_USER --password-stdin
-                '''
-            }
+        script {
+            sh '''
+                echo "Username: $DOCKER_USER"
+                echo "Password Length: $(echo -n "$DOCKER_PASS" | wc -c)"
+            '''
         }
     }
 }
+
 
 
 
