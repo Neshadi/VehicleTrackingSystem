@@ -11,8 +11,9 @@ const Home = () => {
 	const [showForm, setShowForm] = useState(false);
 
 	useEffect(() => {
+		// Update the API URL to use the remote server address
 		axios
-			.get("http://localhost:3001/api/cars")
+			.get("http://ec2-51-20-121-222.eu-north-1.compute.amazonaws.com:3001/api/cars")
 			.then((response) => setVehicles(response.data))
 			.catch((error) => console.error(error));
 	}, []);
@@ -30,7 +31,7 @@ const Home = () => {
 	const handleDeleteVehicle = (vehicleId) => {
 		console.log(`Deleting ${vehicleId}`);
 		axios
-			.delete(`http://localhost:3001/api/cars/${vehicleId}`)
+			.delete(`http://ec2-51-20-121-222.eu-north-1.compute.amazonaws.com:3001/api/cars/${vehicleId}`)
 			.then((response) => {
 				// Filter out the deleted vehicle from the state
 				setVehicles((prevVehicles) =>
@@ -43,8 +44,7 @@ const Home = () => {
 	const handleUpdateVehicle = async (updatedVehicle) => {
 		try {
 			const response = await axios.put(
-				`
-http://localhost:3001/api/cars/${updatedVehicle._id}`,
+				`http://ec2-51-20-121-222.eu-north-1.compute.amazonaws.com:3001/api/cars/${updatedVehicle._id}`,
 				updatedVehicle
 			);
 
