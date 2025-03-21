@@ -15,49 +15,27 @@ pipeline {
                 script {
                     sh "docker build -t hirunika/server-image -f Dockerfileserver ."
                     sh "docker build -t hirunika/client-image -f Dockerfileclient ."
-                }
-            }
-        }
-
-//     stage('Login to Docker Hub') {
-//     steps {
-//         withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-//             script {
-//                 sh '''
-//                     echo "$DOCKER_PASS" | docker login -u $DOCKER_USER --password-stdin
-//                 '''
-//             }
-//         }
-//     }
-// }
-stage('Login to Docker Hub') {
-    steps {
-        withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-            script {
-                sh '''
-                    export DOCKER_USER=${DOCKER_USER}
-                    export DOCKER_PASS=${DOCKER_PASS}
-                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                '''
-            }
-        }
-    }
-}
-
-
-        stage('Push Image') {
-            steps {
-                script {
                     sh "docker push hirunika/server-image"
                     sh "docker push hirunika/client-image"
                 }
             }
         }
-    }
 
-    post {
-        always {
-            sh 'docker logout'
+        stage('Deploy to EC2') {
+            steps {
+                sshagent(['ec2-key']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-ip << EOF
+                    docker pull hirunika/client-image
+                    docker pull hirunika/server-image
+                    docker stop client server || true
+                    docker rm client server || true
+                    docker run -d -p 3000:3000 --name client hirunika/client-image
+                    docker run -d -p 3001:3000 --name server hirunika/server-image
+                    EOF
+                    '''
+                }
+            }
         }
     }
 }
