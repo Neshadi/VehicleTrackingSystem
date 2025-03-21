@@ -35,7 +35,7 @@ const AddVehicle = ({ onAddVehicle }) => {
 
 	const handleAddVehicle = () => {
 		axios
-			.post("http://localhost:3001/api/cars", newVehicle)
+			.post("http://ec2-51-20-121-222.eu-north-1.compute.amazonaws.com:3001/api/cars", newVehicle)
 			.then((response) => {
 				onAddVehicle(response.data);
 
