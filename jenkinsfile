@@ -1,6 +1,6 @@
 pipeline {
     agent any 
-    
+
     stages { 
         stage('SCM Checkout') {
             steps {
@@ -13,29 +13,62 @@ pipeline {
         stage('Build and Push Docker Images') {
             steps {
                 script {
+                    // Build the Docker images
                     sh "docker build -t hirunika/server-image -f Dockerfileserver ."
                     sh "docker build -t hirunika/client-image -f Dockerfileclient ."
+                }
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        sh '''
+                            export DOCKER_USER=${DOCKER_USER}
+                            export DOCKER_PASS=${DOCKER_PASS}
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Images') {
+            steps {
+                script {
+                    // Push the Docker images to Docker Hub
                     sh "docker push hirunika/server-image"
                     sh "docker push hirunika/client-image"
                 }
             }
         }
 
-        stage('Deploy to EC2') {
+        stage('Deploy to Localhost') {
             steps {
-                sshagent(['ec2-key']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-ip << EOF
-                    docker pull hirunika/client-image
-                    docker pull hirunika/server-image
-                    docker stop client server || true
-                    docker rm client server || true
-                    docker run -d -p 3000:3000 --name client hirunika/client-image
-                    docker run -d -p 3001:3000 --name server hirunika/server-image
-                    EOF
-                    '''
+                script {
+                    // Pull the latest images from Docker Hub
+                    sh "docker pull hirunika/server-image"
+                    sh "docker pull hirunika/client-image"
+
+                    // Stop and remove existing containers (if running)
+                    sh "docker stop server || true"
+                    sh "docker rm server || true"
+                    sh "docker stop client || true"
+                    sh "docker rm client || true"
+
+                    // Run the latest images for both server and client
+                    sh "docker run -d -p 3001:3000 --name server hirunika/server-image"
+                    sh "docker run -d -p 3000:3000 --name client hirunika/client-image"
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            // Logout from Docker Hub
+            sh 'docker logout'
         }
     }
 }
