@@ -65,7 +65,7 @@ http://localhost:3001/api/cars/${updatedVehicle._id}`,
 
 	return (
 		<div className="main-container">
-			<h1 className="gfg">Fonto Car Sale</h1>
+			<h1 className="gfg">Paneroma Car Sale</h1>
 			<h1>Car Tracking System</h1>
 			<button onClick={() => setShowForm(!showForm)}>
 				{showForm ? "Close" : "Add New Vehicle"}

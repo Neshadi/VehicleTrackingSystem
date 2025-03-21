@@ -58,7 +58,7 @@ const AddVehicle = ({ onAddVehicle }) => {
 	return (
 		<div className="form-container">
 			<h2 style={{ color: "#007BFF", textAlign: "center" }}>
-				Add a New Vehicles
+				Add a New Vehicle
 			</h2>
 			<form
 				onSubmit={(e) => {
