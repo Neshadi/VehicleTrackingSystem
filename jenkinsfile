@@ -45,10 +45,6 @@ stage('Login to Docker Hub') {
 }
 
 
-
-
-
-
         stage('Push Image') {
             steps {
                 script {
