@@ -14,7 +14,7 @@ RUN npm install
 COPY Server ./
 
 # Expose the port that your server is running on
-EXPOSE 3000
+EXPOSE 3001
 
 # Start the server application
 CMD [ "npm", "start" ]
