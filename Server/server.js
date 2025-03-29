@@ -138,5 +138,5 @@ app.delete('/api/cars/:id', async (req, res) => {
 // });
 
 app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server is running on http://0.0.0.0:${PORT}`);
+    console.log(`Server is running on port 3001`);
 });

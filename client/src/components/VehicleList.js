@@ -29,7 +29,7 @@ const VehicleList = ({
 			{/* Filter and Sort Controls */}
 			<div style={{ marginBottom: "10px" }}>
 				<label>
-					Filter by Name of the Company:
+					Filter by Name of the Company :
 					<input
 						type="text"
 						value={companyFilter}
