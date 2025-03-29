@@ -7,7 +7,13 @@ const seedData = require('./seedData')
 const cors = require('cors')
 
 const app = express();
-app.use(cors())
+// app.use(cors())
+app.use(cors({
+    origin: 'http://ec2-51-20-121-222.eu-north-1.compute.amazonaws.com:3000/', // Change this to your frontend URL in production
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type']
+}));
+
 const PORT = process.env.PORT || 3001; //3001
 
 // Connect to MongoDB (make sure MongoDB is running)
