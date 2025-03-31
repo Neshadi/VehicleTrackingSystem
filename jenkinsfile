@@ -58,7 +58,7 @@ pipeline {
                     sh "docker rm client || true"
 
                     // Run the latest images for both server and client
-                    sh "docker run -d -p 3001:3000 --name server hirunika/server-image"
+                    sh "docker run -d -p 3001:3001 --name server hirunika/server-image"
                     sh "docker run -d -p 3000:3000 --name client hirunika/client-image"
                 }
             }
