@@ -65,7 +65,7 @@ const Home = () => {
 
 	return (
 		<div className="main-container">
-			<h1 className="gfg">Sasina Car Sale</h1>
+			<h1 className="gfg">flora Car Sale</h1>
 			<h1>Car Tracking System</h1>
 			<button onClick={() => setShowForm(!showForm)}>
 				{showForm ? "Close" : "Add New Vehicle"}
